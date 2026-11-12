@@ -817,12 +817,13 @@ function buildMetaPrompt(domain, idea, initial, settings) {
 async function callGemini(metaPrompt) {
   const model = getActiveModel();
   const key = getApiKey();
-  if (!key) {
-    const e = new Error("کلید API موجود نیست. در تنظیمات کلید شخصی Gemini را وارد کن یا برنامه را داخل Canvas اجرا کن.");
-    e.status = 401;
-    throw e;
-  }
-  const url = API_BASE + "/" + encodeURIComponent(model) + ":generateContent?key=" + encodeURIComponent(key);
+  // Note: in Gemini Canvas, the API accepts requests WITHOUT a key
+  // (Google authenticates via Origin/session for *.google.com).
+  // So we DO NOT throw on empty key — we just omit ?key= from the URL
+  // and let Google's API decide. If it returns 403, the error handler below
+  // tells the user to set a personal API key in Settings.
+  const url = API_BASE + "/" + encodeURIComponent(model) + ":generateContent"
+    + (key ? "?key=" + encodeURIComponent(key) : "");
   const body = {
     contents: [{ role: "user", parts: [{ text: metaPrompt }] }],
     generationConfig: {
