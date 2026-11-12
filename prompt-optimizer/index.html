@@ -1,0 +1,1184 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بهینه‌ساز پرامپت صبا</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ Saba Neon theme ============ */
+:root {
+  --bg: #07051a;
+  --bg-grad-1: #1a0f3d;
+  --bg-grad-2: #07051a;
+  --surface: rgba(255,255,255,0.035);
+  --surface-2: rgba(255,255,255,0.06);
+  --surface-3: rgba(255,255,255,0.09);
+  --border: rgba(184,124,255,0.16);
+  --border-strong: rgba(184,124,255,0.42);
+  --primary: #b87cff;
+  --primary-2: #d4a3ff;
+  --primary-glow: rgba(184,124,255,0.55);
+  --accent: #7ce0ff;
+  --accent-glow: rgba(124,224,255,0.45);
+  --text: #f4f2fb;
+  --text-dim: #a99fc7;
+  --text-faint: #6b6388;
+  --ok: #5dd39e;
+  --warn: #ffb84d;
+  --err: #ff6b8a;
+  --radius: 16px;
+  --radius-sm: 9px;
+  --radius-xs: 6px;
+  --mono: 'JetBrains Mono','Courier New',monospace;
+  --font: 'Vazirmatn','Tahoma','Segoe UI',sans-serif;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.25);
+  --shadow-2: 0 8px 28px rgba(8,4,24,.45);
+  --shadow-glow: 0 0 24px var(--primary-glow);
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: radial-gradient(ellipse 90% 60% at 50% -10%, var(--bg-grad-1) 0%, var(--bg-grad-2) 65%);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.85;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(circle at 15% 20%, rgba(184,124,255,0.08), transparent 35%),
+              radial-gradient(circle at 85% 80%, rgba(124,224,255,0.06), transparent 35%);
+}
+button, input, textarea, select { font-family: inherit; color: inherit; }
+a { color: var(--primary-2); text-decoration: none; }
+a:hover { color: var(--accent); text-shadow: 0 0 12px var(--accent-glow); }
+.hidden { display: none !important; }
+
+/* ============ Layout ============ */
+.app-header, .app-main, .app-footer { position: relative; z-index: 1; }
+.app-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 28px;
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  background: rgba(7,5,26,0.6);
+  position: sticky; top: 0; z-index: 20;
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.logo {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), #6b3fb8);
+  display: grid; place-items: center; font-size: 22px;
+  box-shadow: var(--shadow-glow), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.brand h1 {
+  margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -0.3px;
+  background: linear-gradient(90deg, #fff, var(--primary-2));
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.brand .tagline { margin: 0; font-size: 12px; color: var(--text-dim); font-weight: 400; }
+.header-actions { display: flex; gap: 8px; }
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 16px; cursor: pointer;
+  transition: all .18s ease; display: grid; place-items: center;
+}
+.icon-btn:hover { background: var(--surface-2); border-color: var(--border-strong); color: var(--primary-2); transform: translateY(-1px); }
+
+.app-main {
+  max-width: 880px; margin: 0 auto; padding: 28px 24px 60px;
+  display: flex; flex-direction: column; gap: 24px;
+}
+
+/* ============ Domain grid ============ */
+.domain-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+}
+.domain-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 12px;
+  cursor: pointer; transition: all .22s cubic-bezier(.2,.8,.2,1);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  text-align: center;
+}
+.domain-card:hover { background: var(--surface-2); border-color: var(--border-strong); transform: translateY(-2px); }
+.domain-card.active {
+  background: linear-gradient(135deg, rgba(184,124,255,0.18), rgba(184,124,255,0.06));
+  border-color: var(--primary);
+  box-shadow: 0 0 20px var(--primary-glow), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.domain-emoji { font-size: 24px; line-height: 1; }
+.domain-title { font-size: 14px; font-weight: 600; }
+.domain-card.active .domain-title { color: var(--primary-2); }
+.domain-desc { font-size: 10.5px; color: var(--text-faint); line-height: 1.45; }
+@media (max-width: 640px) {
+  .domain-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ============ Input panel ============ */
+.input-panel, .result-panel, .drawer {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-2);
+}
+.input-panel { padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label {
+  font-size: 13px; font-weight: 600; color: var(--text);
+}
+.field .req { color: var(--err); }
+.field .opt { color: var(--text-faint); font-weight: 400; font-size: 11px; }
+textarea, input[type="text"], input[type="password"], select {
+  width: 100%;
+  background: rgba(7,5,26,0.6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 11px 13px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .18s ease, box-shadow .18s ease;
+  resize: vertical;
+}
+textarea { min-height: 70px; font-family: var(--font); line-height: 1.8; }
+textarea:focus, input:focus, select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(184,124,255,0.18);
+}
+textarea::placeholder, input::placeholder { color: var(--text-faint); }
+select {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%23b87cff' d='M6 8L0 0h12z'/></svg>");
+  background-repeat: no-repeat; background-position: left 14px center;
+  padding-left: 34px; cursor: pointer;
+}
+select option, select optgroup { background: #110a2a; color: var(--text); }
+
+.advanced { border: 1px solid var(--border); border-radius: var(--radius-sm); background: rgba(0,0,0,0.18); }
+.advanced > summary {
+  padding: 11px 14px; cursor: pointer; font-size: 13px; font-weight: 500;
+  color: var(--text-dim); list-style: none; user-select: none;
+}
+.advanced > summary::-webkit-details-marker { display: none; }
+.advanced > summary::before {
+  content: "▸"; color: var(--primary); margin-left: 6px; transition: transform .2s ease; display: inline-block;
+}
+.advanced[open] > summary::before { transform: rotate(90deg); }
+.adv-grid {
+  padding: 6px 14px 14px; display: grid;
+  grid-template-columns: repeat(3, 1fr); gap: 12px;
+}
+@media (max-width: 640px) { .adv-grid { grid-template-columns: 1fr; } }
+
+/* ============ Primary button ============ */
+.primary-btn {
+  align-self: stretch;
+  background: linear-gradient(135deg, var(--primary) 0%, #8a4fd6 100%);
+  color: #fff; font-weight: 700; font-size: 15px;
+  border: none; border-radius: var(--radius-sm);
+  padding: 14px 22px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  box-shadow: 0 6px 22px rgba(184,124,255,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  transition: all .2s cubic-bezier(.2,.8,.2,1);
+}
+.primary-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(184,124,255,0.55); }
+.primary-btn:active:not(:disabled) { transform: translateY(0); }
+.primary-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.primary-btn.busy { background: linear-gradient(135deg, #5a3a8a, #3a2566); box-shadow: none; }
+.btn-icon { font-size: 17px; }
+.primary-btn.busy .btn-icon { animation: pulse 1.1s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(0.85);} }
+
+/* ============ Status line ============ */
+.status-line {
+  font-size: 12.5px; padding: 10px 14px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: rgba(0,0,0,0.2);
+}
+.status-line.info { color: var(--accent); border-color: rgba(124,224,255,0.3); }
+.status-line.err { color: var(--err); border-color: rgba(255,107,138,0.3); }
+
+/* ============ Result panel ============ */
+.result-panel { padding: 22px; display: flex; flex-direction: column; gap: 18px; animation: slideIn .35s ease; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.result-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.result-header h2 { margin: 0; font-size: 16px; font-weight: 700; color: var(--primary-2); }
+.result-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.ghost-btn {
+  background: var(--surface-2); border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 12.5px; font-weight: 500;
+  padding: 7px 12px; border-radius: var(--radius-xs); cursor: pointer;
+  transition: all .16s ease;
+}
+.ghost-btn:hover { background: var(--surface-3); color: var(--primary-2); border-color: var(--border-strong); }
+.ghost-btn.danger:hover { color: var(--err); border-color: rgba(255,107,138,0.4); }
+
+.result-block { display: flex; flex-direction: column; gap: 8px; }
+.block-label {
+  font-size: 11.5px; font-weight: 600; color: var(--text-faint);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.english-prompt {
+  margin: 0; padding: 16px;
+  background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--mono); font-size: 13px; line-height: 1.7;
+  color: #e6e0ff; white-space: pre-wrap; word-wrap: break-word;
+  direction: ltr; text-align: left;
+  max-height: 460px; overflow-y: auto;
+}
+.persian-explanation {
+  background: rgba(0,0,0,0.18); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 14px 16px;
+  font-size: 14px; line-height: 1.9; color: var(--text);
+}
+.persian-explanation p { margin: 0 0 10px; }
+.persian-explanation p:last-child { margin-bottom: 0; }
+
+.tips-list {
+  margin: 0; padding: 0; list-style: none;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.tips-list li {
+  background: rgba(184,124,255,0.08);
+  border-right: 3px solid var(--primary);
+  padding: 8px 14px; border-radius: var(--radius-xs);
+  font-size: 13px; color: var(--text);
+}
+.tips-list li::before {
+  content: "★"; color: var(--primary); margin-left: 6px; font-size: 11px;
+}
+
+/* ============ Drawer (history) ============ */
+.drawer {
+  position: fixed; top: 0; bottom: 0; right: 0;
+  width: 380px; max-width: 90vw;
+  background: rgba(13,8,38,0.97);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid var(--border-strong);
+  box-shadow: -20px 0 50px rgba(0,0,0,0.5);
+  z-index: 50;
+  display: flex; flex-direction: column;
+  animation: drawerIn .25s ease;
+}
+@keyframes drawerIn { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+.drawer-header {
+  padding: 18px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.drawer-header h2 { margin: 0; font-size: 15px; color: var(--primary-2); }
+.history-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.history-list .empty { color: var(--text-faint); text-align: center; padding: 24px 12px; font-size: 13px; }
+.history-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 11px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: border-color .15s ease;
+}
+.history-card:hover { border-color: var(--border-strong); }
+.hc-top { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+.hc-tag {
+  background: rgba(184,124,255,0.15); color: var(--primary-2);
+  padding: 2px 8px; border-radius: 4px; font-weight: 600;
+}
+.hc-date { color: var(--text-faint); }
+.hc-idea { font-size: 12.5px; color: var(--text-dim); line-height: 1.6; }
+.hc-actions { display: flex; gap: 12px; }
+.link-btn {
+  background: none; border: none; color: var(--primary-2);
+  font-size: 12px; cursor: pointer; padding: 0;
+}
+.link-btn:hover { color: var(--accent); text-decoration: underline; }
+.link-btn.danger { color: var(--err); }
+.drawer-footer { padding: 14px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+.drawer-footer .ghost-btn { flex: 1; }
+
+/* ============ Modal ============ */
+.modal {
+  position: fixed; inset: 0; z-index: 60;
+  display: grid; place-items: center;
+}
+.modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(7,5,26,0.75); backdrop-filter: blur(6px);
+}
+.modal-panel {
+  position: relative; z-index: 1;
+  background: linear-gradient(180deg, rgba(26,15,61,0.95), rgba(13,8,38,0.97));
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-2), 0 0 40px rgba(184,124,255,0.18);
+  width: 480px; max-width: 92vw; max-height: 86vh;
+  display: flex; flex-direction: column;
+  animation: modalIn .22s ease;
+}
+@keyframes modalIn { from { transform: scale(0.96); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-header h2 { margin: 0; font-size: 15px; color: var(--primary-2); }
+.modal-body { padding: 18px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+.modal-body hr { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+.modal-body p { margin: 0; font-size: 13px; color: var(--text-dim); line-height: 1.8; }
+.modal-body ul { margin: 0; padding-right: 22px; font-size: 13px; color: var(--text-dim); }
+.modal-body ul li { margin-bottom: 4px; }
+.modal-body .hint { font-size: 11.5px; color: var(--text-faint); margin-top: 4px; }
+.creator-line { font-size: 12.5px !important; color: var(--text-dim) !important; }
+
+/* ============ Toast ============ */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: rgba(13,8,38,0.97); backdrop-filter: blur(10px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 11px 18px; font-size: 13px; font-weight: 500;
+  box-shadow: var(--shadow-2); z-index: 100;
+  animation: toastIn .2s ease;
+}
+.toast.ok { color: var(--ok); border-color: rgba(93,211,158,0.4); }
+.toast.warn { color: var(--warn); border-color: rgba(255,184,77,0.4); }
+.toast.err { color: var(--err); border-color: rgba(255,107,138,0.4); }
+.toast.info { color: var(--accent); border-color: rgba(124,224,255,0.4); }
+@keyframes toastIn { from { transform: translate(-50%, 16px); opacity: 0; } to { transform: translateX(-50%); opacity: 1; } }
+
+/* ============ Footer ============ */
+.app-footer {
+  text-align: center; padding: 22px 16px 32px;
+  font-size: 12px; color: var(--text-faint);
+  border-top: 1px solid var(--border);
+  margin-top: 30px;
+}
+.app-footer strong { color: var(--primary-2); font-weight: 600; }
+.app-footer a { color: var(--text-dim); }
+.app-footer a:hover { color: var(--primary-2); }
+
+@media (max-width: 640px) {
+  .app-header { padding: 16px; }
+  .brand .tagline { display: none; }
+  .app-main { padding: 18px 14px 40px; }
+  .input-panel, .result-panel { padding: 16px; }
+  .result-header { flex-direction: column; align-items: stretch; }
+  .result-actions { justify-content: stretch; }
+  .result-actions .ghost-btn { flex: 1; }
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="brand">
+    <div class="logo">✨</div>
+    <div>
+      <h1>بهینه‌ساز پرامپت صبا</h1>
+      <p class="tagline">پرامپت حرفه‌ای انگلیسی برای متن، سئو، عکس و ویدئو</p>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn" id="historyBtn" title="تاریخچه">🕐</button>
+    <button class="icon-btn" id="settingsBtn" title="تنظیمات">⚙️</button>
+    <button class="icon-btn" id="aboutBtn" title="درباره">ℹ️</button>
+  </div>
+</header>
+
+<main class="app-main">
+
+  <section class="domain-grid" aria-label="انتخاب دامنه">
+    <button class="domain-card active" data-domain="text" type="button">
+      <span class="domain-emoji">📝</span>
+      <span class="domain-title">متن</span>
+      <span class="domain-desc">مقاله، ایمیل، کپی‌رایتینگ</span>
+    </button>
+    <button class="domain-card" data-domain="seo" type="button">
+      <span class="domain-emoji">🔍</span>
+      <span class="domain-title">سئو</span>
+      <span class="domain-desc">محتوای بهینه موتور جستجو</span>
+    </button>
+    <button class="domain-card" data-domain="image" type="button">
+      <span class="domain-emoji">🎨</span>
+      <span class="domain-title">عکس</span>
+      <span class="domain-desc">پرامپت تصویرسازی حرفه‌ای</span>
+    </button>
+    <button class="domain-card" data-domain="video" type="button">
+      <span class="domain-emoji">🎬</span>
+      <span class="domain-title">ویدئو</span>
+      <span class="domain-desc">پرامپت تولید ویدئو و انیمیشن</span>
+    </button>
+  </section>
+
+  <section class="input-panel">
+    <div class="field">
+      <label for="ideaInput">ایده‌ات رو بنویس <span class="req">*</span></label>
+      <textarea id="ideaInput" rows="3" placeholder="مثلاً: یک مقاله درباره تأثیر هوش مصنوعی روی آموزش کودکان بنویس"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="initialInput">پرامپت اولیه‌ات <span class="opt">(اختیاری)</span></label>
+      <textarea id="initialInput" rows="4" placeholder="اگر پرامپتی نوشتی اینجا بذار تا روش بهینه‌سازی کنم. اگه خالیه، از صفر می‌سازم."></textarea>
+    </div>
+
+    <details class="advanced">
+      <summary>تنظیمات پیشرفته</summary>
+      <div class="adv-grid">
+        <div class="field">
+          <label for="toneInput">لحن</label>
+          <select id="toneInput">
+            <option value="">پیش‌فرض</option>
+            <option value="formal">رسمی</option>
+            <option value="friendly">دوستانه</option>
+            <option value="professional">حرفه‌ای</option>
+            <option value="playful">شاد و سرگرم‌کننده</option>
+            <option value="academic">علمی</option>
+            <option value="persuasive">ترغیب‌کننده</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="audienceInput">مخاطب</label>
+          <input id="audienceInput" type="text" placeholder="مثلاً والدین، دانشجویان، کسب‌وکار کوچک">
+        </div>
+        <div class="field">
+          <label for="lengthInput">طول خروجی</label>
+          <select id="lengthInput">
+            <option value="">پیش‌فرض</option>
+            <option value="short">کوتاه</option>
+            <option value="medium">متوسط</option>
+            <option value="long">طولانی</option>
+            <option value="detailed">بسیار جامع</option>
+          </select>
+        </div>
+      </div>
+    </details>
+
+    <button id="optimizeBtn" class="primary-btn" type="button">
+      <span class="btn-icon">✨</span>
+      <span>بهینه‌سازی پرامپت</span>
+    </button>
+
+    <div id="statusLine" class="hidden"></div>
+  </section>
+
+  <section id="resultPanel" class="result-panel hidden">
+    <div class="result-header">
+      <h2>پرامپت بهینه‌شده</h2>
+      <div class="result-actions">
+        <button id="copyEnBtn" class="ghost-btn" type="button">📋 کپی پرامپت</button>
+        <button id="copyAllBtn" class="ghost-btn" type="button">📋 کپی همه</button>
+        <button id="saveBtn" class="ghost-btn" type="button">💾 ذخیره</button>
+      </div>
+    </div>
+
+    <div class="result-block">
+      <div class="block-label">پرامپت انگلیسی</div>
+      <pre id="englishPrompt" class="english-prompt" dir="ltr"></pre>
+    </div>
+
+    <div class="result-block">
+      <div class="block-label">توضیح فارسی</div>
+      <div id="persianExplanation" class="persian-explanation"></div>
+    </div>
+
+    <div class="result-block">
+      <div class="block-label">نکات طلایی</div>
+      <ul id="tipsList" class="tips-list"></ul>
+    </div>
+  </section>
+
+</main>
+
+<aside id="historyDrawer" class="drawer hidden" aria-label="تاریخچه">
+  <div class="drawer-header">
+    <h2>تاریخچه پرامپت‌ها</h2>
+    <button id="closeHistory" class="icon-btn" type="button">✕</button>
+  </div>
+  <div id="historyList" class="history-list">
+    <p class="empty">هنوز پرامپتی ذخیره نشده.</p>
+  </div>
+  <div class="drawer-footer">
+    <button id="exportBtn" class="ghost-btn" type="button">⬇️ خروجی</button>
+    <button id="clearHistoryBtn" class="ghost-btn danger" type="button">🗑️ پاک‌سازی</button>
+  </div>
+</aside>
+
+<div id="settingsModal" class="modal hidden">
+  <div class="modal-backdrop" data-modal="settingsModal"></div>
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h2>تنظیمات</h2>
+      <button class="icon-btn modal-close" data-modal="settingsModal" type="button">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label for="apiKeyInput">🔑 کلید API شخصی (اختیاری)</label>
+        <input id="apiKeyInput" type="password" placeholder="AIza..." autocomplete="off" spellcheck="false">
+        <p class="hint">با کلید شخصی از مدل‌های سریع‌تر gemini-3.5-flash-lite / gemini-3.8-flash استفاده می‌شه. فقط در همین مرورگر ذخیره می‌شه.</p>
+      </div>
+      <div class="field">
+        <label for="modelSelect">مدل متن</label>
+        <select id="modelSelect">
+          <optgroup label="بدون کلید (Canvas)">
+            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+          </optgroup>
+          <optgroup label="با کلید شخصی">
+            <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (پیش‌فرض)</option>
+            <option value="gemini-3.5-flash">gemini-3.5-flash</option>
+            <option value="gemini-3.8-flash">gemini-3.8-flash</option>
+          </optgroup>
+        </select>
+        <p class="hint">اگه کلید بدی ولی مدل انتخاب نکنی، gemini-3.5-flash-lite استفاده می‌شه.</p>
+      </div>
+      <hr>
+      <p class="creator-line">ساخته‌ی <strong>سید صبا میری</strong> · <a href="https://viroai.ir" target="_blank" rel="noopener">viroai.ir</a> · <a href="https://instagram.com/viromedia404" target="_blank" rel="noopener">اینستاگرام viromedia404</a> · <a href="tel:+989120349893">۰۹۱۲۰۳۴۹۸۹۳</a> · تلگرام: به‌زودی</p>
+    </div>
+  </div>
+</div>
+
+<div id="aboutModal" class="modal hidden">
+  <div class="modal-backdrop" data-modal="aboutModal"></div>
+  <div class="modal-panel">
+    <div class="modal-header">
+      <h2>درباره بهینه‌ساز پرامپت صبا</h2>
+      <button class="icon-btn modal-close" data-modal="aboutModal" type="button">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>ابزار رایگان برای ساخت پرامپت‌های حرفه‌ای انگلیسی برای مدل‌های هوش مصنوعی. ایده‌ی فارسی شما رو می‌گیره و یک پرامپت ساختاریافته انگلیسی + توضیح فارسی کامل تحویل می‌ده.</p>
+      <ul>
+        <li>۴ دامنه: متن، سئو، عکس، ویدئو</li>
+        <li>خروجی JSON با ساختار مشخص</li>
+        <li>تاریخچه دائمی در مرورگر</li>
+        <li>قابل استفاده با کلید شخصی Gemini</li>
+        <li>میانبر Ctrl/Cmd + Enter برای اجرا</li>
+      </ul>
+      <hr>
+      <p>ساخته‌ی <strong>سید صبا میری</strong></p>
+      <p><a href="https://viroai.ir" target="_blank" rel="noopener">🌐 viroai.ir</a></p>
+      <p><a href="https://instagram.com/viromedia404" target="_blank" rel="noopener">📸 اینستاگرام viromedia404</a></p>
+      <p><a href="tel:+989120349893">📞 ۰۹۱۲۰۳۴۹۸۹۳</a></p>
+      <p>💬 تلگرام: به‌زودی</p>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<footer class="app-footer">
+  <p>ساخته‌ی <strong>سید صبا میری</strong> · <a href="https://viroai.ir" target="_blank" rel="noopener">viroai.ir</a> · <a href="https://instagram.com/viromedia404" target="_blank" rel="noopener">اینستاگرام</a> · <a href="tel:+989120349893">۰۹۱۲۰۳۴۹۸۹۳</a> · تلگرام: به‌زودی</p>
+</footer>
+
+<script>
+/* ============================================================================
+ * بهینه‌ساز پرامپت صبا · v1.0.0
+ * ساخته‌ی سید صبا میری · viroai.ir
+ * اجرا در Gemini Canvas (یا با کلید شخصی Gemini).
+ * کد بومی Gemini: متغیر apiKey خالی است و Canvas خودش پر می‌کند.
+ * ========================================================================== */
+
+/* ===== Constants (مدل‌ها بالای فایل) ===== */
+const APP_ID = "saba-prompt-optimizer";
+const APP_VERSION = "1.0.0";
+
+const TEXT_MODEL_CANVAS = "gemini-2.5-flash";          // بدون کلید، تست‌شده در Canvas
+const TEXT_MODELS_WITH_KEY = ["gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-3.8-flash"];
+const TEXT_MODEL_DEFAULT_WITH_KEY = "gemini-3.5-flash-lite";
+
+const apiKey = "";  // Canvas پر می‌کند. با کلید شخصی از localStorage جایگزین می‌شه.
+
+const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+
+const DOMAINS = {
+  text: {
+    label: "متن",
+    guidance: [
+      "Domain: General text content (articles, emails, copywriting, storytelling, scripts).",
+      "Apply: clear role assignment, audience specification, tone, length, key points to cover, output format (markdown sections if helpful), style references, and what to avoid.",
+      "Include explicit word count or length bounds, and a structure (sections / headings)."
+    ].join(" ")
+  },
+  seo: {
+    label: "سئو",
+    guidance: [
+      "Domain: SEO-optimized content.",
+      "Include: target keyword (title, H1, first 100 words, natural distribution), search intent (informational/commercial/transactional/navigational), audience, content type (listicle/how-to/guide/comparison/pillar), word count range, heading structure (H1-H3), meta title (<=60 chars) and meta description (<=155 chars), internal & external linking suggestions, tone, schema markup (Article/FAQ/HowTo), and what to avoid (keyword stuffing, duplicate content)."
+    ].join(" ")
+  },
+  image: {
+    label: "عکس",
+    guidance: [
+      "Domain: Image generation prompts (Midjourney / Stable Diffusion / DALL-E / Flux / Imagen).",
+      "Include: subject description, art style (photorealistic/illustration/3D render/oil/anime), composition (rule of thirds, close-up, wide shot), lighting (golden hour, soft box, dramatic), color palette, mood, technical specs (camera body and lens if photo, detail level), aspect ratio, quality boosters (\"highly detailed\", \"8k\" if appropriate), and what to avoid (extra fingers, text artifacts, distortion).",
+      "Format: comma-separated descriptive phrases plus a structured section."
+    ].join(" ")
+  },
+  video: {
+    label: "ویدئو",
+    guidance: [
+      "Domain: Video generation prompts (Sora / Runway / Kling / Pika / Veo).",
+      "Include: scene description, subject and action, camera movement (pan/tilt/dolly/tracking/static/handheld), shot type (close-up/wide/aerial), duration (seconds), motion intensity, style (cinematic/documentary/anime/3D/vintage), lighting, mood, transitions if multi-shot, sound design hints (ambient music, narration pace), aspect ratio, and what to avoid (flickering, morphing, unrealistic physics).",
+      "For multi-shot videos, break the prompt into shot-by-shot sections."
+    ].join(" ")
+  }
+};
+
+/* ===== State ===== */
+const state = {
+  domain: "text",
+  optimizing: false,
+  lastResult: null
+};
+
+/* ===== IndexedDB ===== */
+const DB_NAME = "saba-prompt-optimizer";
+const DB_VERSION = 1;
+const STORE = "prompts";
+let _db = null;
+
+function dbOpen() {
+  return new Promise((resolve, reject) => {
+    if (_db) return resolve(_db);
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(STORE)) {
+        const os = db.createObjectStore(STORE, { keyPath: "id" });
+        os.createIndex("ts", "timestamp", { unique: false });
+        os.createIndex("domain", "domain", { unique: false });
+      }
+    };
+    req.onsuccess = () => { _db = req.result; resolve(_db); };
+    req.onerror = () => reject(req.error);
+  });
+}
+async function dbPut(item) {
+  const db = await dbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).put(item);
+    tx.oncomplete = () => resolve(item);
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function dbGetAll() {
+  const db = await dbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readonly");
+    const req = tx.objectStore(STORE).getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function dbDel(id) {
+  const db = await dbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function dbClear() {
+  const db = await dbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+/* ===== Storage bridge (companion extension) ===== */
+// postMessage {__sabaBridge:1, dir, app:<app-id>, id, op}; ops: ping/get/set/del/list/getAll/batch/clear
+let _bridgeReady = false;
+let _bridgeBuffer = [];
+let _bridgeTimer = null;
+
+function bridgeInit() {
+  window.addEventListener("message", (e) => {
+    const m = e.data;
+    if (!m || m.__sabaBridge !== 1 || m.app !== APP_ID) return;
+    bridgeHandle(m, e.source);
+  });
+  bridgeSend("ping", null, null).then((resp) => {
+    if (resp && resp.ok) {
+      _bridgeReady = true;
+      bridgeSend("getAll", null, null).then((r) => {
+        if (r && r.ok && Array.isArray(r.value)) {
+          r.value.forEach(item => dbPut(item).catch(() => {}));
+          refreshHistoryUI();
+        }
+      });
+    }
+  }).catch(() => {});
+}
+
+function bridgeSend(op, id, value) {
+  return new Promise((resolve) => {
+    try {
+      const reqId = "r" + Math.random().toString(36).slice(2);
+      const msg = { __sabaBridge: 1, dir: "request", app: APP_ID, id: id, op: op, value: value, reqId: reqId };
+      const once = (e) => {
+        const m = e.data;
+        if (!m || m.__sabaBridge !== 1 || m.app !== APP_ID || m.dir !== "response" || m.reqId !== reqId) return;
+        window.removeEventListener("message", once);
+        resolve(m);
+      };
+      window.addEventListener("message", once);
+      window.postMessage(msg, "*");
+      setTimeout(() => { window.removeEventListener("message", once); resolve({ ok: false }); }, 600);
+    } catch (_) { resolve({ ok: false }); }
+  });
+}
+
+function bridgeHandle(m, source) {
+  if (m.dir !== "request") return;
+  const reply = (value, ok) => {
+    const r = { __sabaBridge: 1, dir: "response", app: APP_ID, reqId: m.reqId, ok: !!ok, value: value };
+    try { (source || window).postMessage(r, "*"); } catch (_) {}
+  };
+  switch (m.op) {
+    case "ping": reply({ ok: true }, true); break;
+    case "get":
+      dbGetAll().then(all => reply(all.find(x => x.id === m.id) || null, true)).catch(() => reply(null, false)); break;
+    case "set":
+      if (m.value) dbPut(m.value).then(() => reply(m.value, true)).catch(() => reply(null, false));
+      else reply(null, false); break;
+    case "del":
+      dbDel(m.id).then(() => reply({ ok: true }, true)).catch(() => reply(null, false)); break;
+    case "list":
+    case "getAll":
+      dbGetAll().then(all => reply(all, true)).catch(() => reply([], false)); break;
+    case "clear":
+      dbClear().then(() => reply({ ok: true }, true)).catch(() => reply(null, false)); break;
+    case "batch":
+      if (Array.isArray(m.value)) Promise.all(m.value.map(v => dbPut(v))).then(() => reply({ ok: true }, true)).catch(() => reply(null, false));
+      else reply(null, false); break;
+    default: reply(null, false);
+  }
+}
+
+function mirrorWrite(item) {
+  _bridgeBuffer.push(item);
+  if (_bridgeTimer) clearTimeout(_bridgeTimer);
+  _bridgeTimer = setTimeout(() => {
+    const batch = _bridgeBuffer.splice(0);
+    if (_bridgeReady && batch.length) bridgeSend("batch", null, batch).catch(() => {});
+  }, 400);
+}
+
+/* ===== Gemini API call ===== */
+function getUserKey() {
+  return (localStorage.getItem("saba-prompt-optimizer.apiKey") || "").trim();
+}
+function getApiKey() {
+  return getUserKey() || apiKey || "";
+}
+function getActiveModel() {
+  const userKey = getUserKey();
+  if (!userKey) return TEXT_MODEL_CANVAS;
+  const sel = localStorage.getItem("saba-prompt-optimizer.model") || "";
+  if (sel && TEXT_MODELS_WITH_KEY.includes(sel)) return sel;
+  return TEXT_MODEL_DEFAULT_WITH_KEY;
+}
+
+function buildMetaPrompt(domain, idea, initial, settings) {
+  const d = DOMAINS[domain] || DOMAINS.text;
+  const lines = [];
+  lines.push("You are an elite prompt engineer with deep expertise in crafting prompts for AI models (GPT, Claude, Gemini, Midjourney, Sora, Runway, etc).");
+  lines.push("Your task: take the user's rough idea (given in Persian) and their optional initial prompt, then produce a polished, professional prompt in ENGLISH that follows industry best practices.");
+  lines.push("");
+  lines.push(d.guidance);
+  lines.push("");
+  lines.push("USER INPUT:");
+  lines.push("- Domain: " + d.label);
+  lines.push("- Idea (Persian, capture the intent precisely): " + idea);
+  if (initial && initial.trim()) lines.push("- Initial prompt (refine or rewrite this): " + initial);
+  else lines.push("- Initial prompt: (none — build from scratch)");
+  if (settings.tone) lines.push("- Desired tone: " + settings.tone);
+  if (settings.audience) lines.push("- Target audience: " + settings.audience);
+  if (settings.length) lines.push("- Output length preference: " + settings.length);
+  lines.push("");
+  lines.push("OUTPUT: respond with STRICT JSON only (no markdown fences, no commentary) matching this exact schema:");
+  lines.push('{');
+  lines.push('  "english_prompt": "The complete optimized prompt in English. Specific, structured, ready to paste into an AI model. Use markdown section headers (## Role, ## Task, ## Constraints, ## Output Format) when helpful. Be thorough but not bloated.",');
+  lines.push('  "persian_explanation": "توضیح فارسی کامل و خوانا درباره این پرامپت: هر بخش چه می‌کند، چرا انتخاب شده، و کاربر چطور باید آن را تنظیم یا استفاده کند. حداقل ۳ پاراگراف، با ساختار واضح.",');
+  lines.push('  "tips": ["نکته ۱", "نکته ۲", "نکته ۳"]');
+  lines.push('}');
+  lines.push("The tips array must contain 3 to 5 short Persian sentences with practical advice for getting better results from the optimized prompt.");
+  lines.push("Respond ONLY with the JSON object.");
+  return lines.join("\n");
+}
+
+async function callGemini(metaPrompt) {
+  const model = getActiveModel();
+  const key = getApiKey();
+  if (!key) {
+    const e = new Error("کلید API موجود نیست. در تنظیمات کلید شخصی Gemini را وارد کن یا برنامه را داخل Canvas اجرا کن.");
+    e.status = 401;
+    throw e;
+  }
+  const url = API_BASE + "/" + encodeURIComponent(model) + ":generateContent?key=" + encodeURIComponent(key);
+  const body = {
+    contents: [{ role: "user", parts: [{ text: metaPrompt }] }],
+    generationConfig: {
+      temperature: 0.7,
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: "OBJECT",
+        properties: {
+          english_prompt: { type: "STRING" },
+          persian_explanation: { type: "STRING" },
+          tips: { type: "ARRAY", items: { type: "STRING" } }
+        },
+        required: ["english_prompt", "persian_explanation", "tips"]
+      }
+    }
+  };
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    const e = new Error("HTTP " + res.status + (txt ? ": " + txt.slice(0, 240) : ""));
+    e.status = res.status;
+    e.body = txt;
+    throw e;
+  }
+  const data = await res.json();
+  const cand = data.candidates && data.candidates[0];
+  const text = (cand && cand.content && cand.content.parts && cand.content.parts[0] && cand.content.parts[0].text) || "";
+  if (!text) {
+    const block = data.promptFeedback && data.promptFeedback.blockReason;
+    const e = new Error(block ? ("پاسخ مسدود شد: " + block) : "پاسخ خالی از مدل");
+    throw e;
+  }
+  let parsed;
+  try { parsed = JSON.parse(text); }
+  catch (_) {
+    const m = text.match(/\{[\s\S]*\}/);
+    if (m) parsed = JSON.parse(m[0]);
+    else {
+      const e = new Error("خروجی مدل JSON معتبر نیست");
+      throw e;
+    }
+  }
+  if (!parsed.english_prompt) throw new Error("خروجی مدل فاقد english_prompt است");
+  return parsed;
+}
+
+/* ===== UI helpers ===== */
+function $(id) { return document.getElementById(id); }
+function escapeHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+function showToast(msg, kind) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.className = "toast " + (kind || "info");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => { t.className = "toast hidden"; }, 2400);
+}
+
+function selectDomain(d) {
+  if (!DOMAINS[d]) return;
+  state.domain = d;
+  document.querySelectorAll(".domain-card").forEach(c => {
+    c.classList.toggle("active", c.dataset.domain === d);
+  });
+}
+
+function setOptimizing(busy) {
+  state.optimizing = busy;
+  const btn = $("optimizeBtn");
+  btn.disabled = busy;
+  btn.classList.toggle("busy", busy);
+  // Note: status line is managed by doOptimize (start=info, success=hidden, error=err).
+  // We do NOT auto-hide it here, otherwise we wipe the error message in the finally block.
+  if (busy) {
+    const s = $("statusLine");
+    s.className = "status-line info";
+    s.textContent = "در حال بهینه‌سازی... مدل: " + getActiveModel();
+  }
+}
+
+function renderResult(r) {
+  $("englishPrompt").textContent = r.english_prompt;
+
+  const pe = $("persianExplanation");
+  pe.innerHTML = "";
+  const paragraphs = String(r.persian_explanation || "").split(/\n{2,}/);
+  paragraphs.forEach(p => {
+    const t = p.trim();
+    if (!t) return;
+    const para = document.createElement("p");
+    para.textContent = t;
+    pe.appendChild(para);
+  });
+  if (!pe.children.length) {
+    const p = document.createElement("p");
+    p.textContent = "—";
+    pe.appendChild(p);
+  }
+
+  const ul = $("tipsList");
+  ul.innerHTML = "";
+  (Array.isArray(r.tips) ? r.tips : []).forEach(t => {
+    const li = document.createElement("li");
+    li.textContent = t;
+    ul.appendChild(li);
+  });
+
+  $("resultPanel").className = "result-panel";
+  $("resultPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+async function doOptimize() {
+  if (state.optimizing) return;
+  const idea = $("ideaInput").value.trim();
+  if (!idea) { showToast("اول ایده‌ات رو بنویس", "warn"); $("ideaInput").focus(); return; }
+  const initial = $("initialInput").value.trim();
+  const settings = {
+    tone: $("toneInput").value,
+    audience: $("audienceInput").value.trim(),
+    length: $("lengthInput").value
+  };
+  setOptimizing(true);
+  try {
+    const meta = buildMetaPrompt(state.domain, idea, initial, settings);
+    const result = await callGemini(meta);
+    state.lastResult = {
+      id: "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      domain: state.domain,
+      idea: idea,
+      english_prompt: result.english_prompt,
+      persian_explanation: result.persian_explanation || "",
+      tips: Array.isArray(result.tips) ? result.tips : [],
+      timestamp: Date.now(),
+      model: getActiveModel()
+    };
+    renderResult(state.lastResult);
+    $("statusLine").className = "hidden";  // clear "در حال بهینه‌سازی..." on success
+    showToast("پرامپت آماده شد ✓", "ok");
+  } catch (e) {
+    console.error("optimize error:", e);
+    const s = $("statusLine");
+    s.className = "status-line err";
+    let msg = "خطا: " + (e.message || "نامشخص");
+    if (e.status === 401 || e.status === 403) msg += " — کلید API یا دسترسی مدل مشکل داره";
+    else if (e.status === 429) msg += " — محدودیت نرخ. چند ثانیه بعد دوباره";
+    else if (e.status === 404) msg += " — مدل پیدا نشد. در تنظیمات مدل دیگه‌ای انتخاب کن";
+    else if (e.status >= 500) msg += " — خطای سمت سرور. دوباره امتحان کن";
+    s.textContent = msg;
+    showToast("بهینه‌سازی ناموفق بود", "err");
+  } finally {
+    setOptimizing(false);
+  }
+}
+
+async function saveCurrent() {
+  if (!state.lastResult) { showToast("چیزی برای ذخیره نیست", "warn"); return; }
+  try {
+    await dbPut(state.lastResult);
+    mirrorWrite(state.lastResult);
+    await refreshHistoryUI();
+    showToast("ذخیره شد ✓", "ok");
+  } catch (e) {
+    showToast("ذخیره ناموفق", "err");
+  }
+}
+
+async function refreshHistoryUI() {
+  let list;
+  try { list = await dbGetAll(); }
+  catch (e) { list = []; }
+  const ul = $("historyList");
+  if (!list.length) {
+    ul.innerHTML = '<p class="empty">هنوز پرامپتی ذخیره نشده.</p>';
+    return;
+  }
+  list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  ul.innerHTML = "";
+  list.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "history-card";
+    let dateStr = "";
+    try {
+      const d = new Date(item.timestamp);
+      dateStr = d.toLocaleDateString("fa-IR") + " · " + d.toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" });
+    } catch (_) { dateStr = "—"; }
+    const domLabel = (DOMAINS[item.domain] && DOMAINS[item.domain].label) || item.domain;
+    const ideaShort = (item.idea || "").slice(0, 90) + ((item.idea || "").length > 90 ? "…" : "");
+    card.innerHTML =
+      '<div class="hc-top"><span class="hc-tag">' + escapeHtml(domLabel) + '</span><span class="hc-date">' + escapeHtml(dateStr) + '</span></div>' +
+      '<div class="hc-idea">' + escapeHtml(ideaShort) + '</div>' +
+      '<div class="hc-actions">' +
+        '<button class="link-btn" data-act="load" data-id="' + escapeHtml(item.id) + '" type="button">باز کردن</button>' +
+        '<button class="link-btn danger" data-act="del" data-id="' + escapeHtml(item.id) + '" type="button">حذف</button>' +
+      '</div>';
+    ul.appendChild(card);
+  });
+}
+
+async function handleHistoryClick(e) {
+  const btn = e.target.closest("button[data-act]");
+  if (!btn) return;
+  const id = btn.dataset.id;
+  const act = btn.dataset.act;
+  if (act === "del") {
+    try {
+      await dbDel(id);
+      if (_bridgeReady) bridgeSend("del", id, null).catch(() => {});
+      await refreshHistoryUI();
+      showToast("حذف شد", "info");
+    } catch (_) { showToast("حذف ناموفق", "err"); }
+  } else if (act === "load") {
+    try {
+      const all = await dbGetAll();
+      const item = all.find(x => x.id === id);
+      if (item) {
+        state.lastResult = item;
+        selectDomain(item.domain);
+        $("ideaInput").value = item.idea || "";
+        $("initialInput").value = "";
+        renderResult(item);
+        $("historyDrawer").className = "drawer hidden";
+        showToast("بارگذاری شد", "ok");
+      }
+    } catch (_) { showToast("بارگذاری ناموفق", "err"); }
+  }
+}
+
+async function clearHistory() {
+  if (!confirm("کل تاریخچه پاک شود؟")) return;
+  try {
+    await dbClear();
+    if (_bridgeReady) bridgeSend("clear", null, null).catch(() => {});
+    await refreshHistoryUI();
+    showToast("تاریخچه پاک شد", "info");
+  } catch (_) { showToast("پاک‌سازی ناموفق", "err"); }
+}
+
+async function exportBackup() {
+  let list;
+  try { list = await dbGetAll(); }
+  catch (e) { list = []; }
+  if (!list.length) { showToast("چیزی برای خروجی نیست", "warn"); return; }
+  const payload = JSON.stringify({ app: APP_ID, version: APP_VERSION, exported_at: Date.now(), items: list }, null, 2);
+  const blob = new Blob([payload], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "saba-prompt-optimizer-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1200);
+  showToast("خروجی گرفته شد", "ok");
+}
+
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise((resolve, reject) => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.top = "-9999px";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); resolve(); }
+    catch (e) { reject(e); }
+    document.body.removeChild(ta);
+  });
+}
+
+/* ===== Init ===== */
+function init() {
+  document.querySelectorAll(".domain-card").forEach(c => {
+    c.addEventListener("click", () => selectDomain(c.dataset.domain));
+  });
+
+  $("optimizeBtn").addEventListener("click", doOptimize);
+
+  $("copyEnBtn").addEventListener("click", () => {
+    if (!state.lastResult) return;
+    copyText(state.lastResult.english_prompt)
+      .then(() => showToast("پرامپت کپی شد ✓", "ok"))
+      .catch(() => showToast("کپی ناموفق", "err"));
+  });
+  $("copyAllBtn").addEventListener("click", () => {
+    if (!state.lastResult) return;
+    const r = state.lastResult;
+    const all =
+      "### Optimized Prompt (English)\n\n" + r.english_prompt +
+      "\n\n### توضیح فارسی\n\n" + r.persian_explanation +
+      "\n\n### نکات طلایی\n\n" + (r.tips || []).map((t, i) => (i + 1) + ". " + t).join("\n");
+    copyText(all)
+      .then(() => showToast("همه کپی شد ✓", "ok"))
+      .catch(() => showToast("کپی ناموفق", "err"));
+  });
+  $("saveBtn").addEventListener("click", saveCurrent);
+
+  $("historyBtn").addEventListener("click", async () => {
+    $("historyDrawer").className = "drawer";
+    await refreshHistoryUI();
+  });
+  $("closeHistory").addEventListener("click", () => { $("historyDrawer").className = "drawer hidden"; });
+  $("historyList").addEventListener("click", handleHistoryClick);
+  $("clearHistoryBtn").addEventListener("click", clearHistory);
+  $("exportBtn").addEventListener("click", exportBackup);
+
+  $("settingsBtn").addEventListener("click", () => { $("settingsModal").className = "modal"; });
+  $("aboutBtn").addEventListener("click", () => { $("aboutModal").className = "modal"; });
+  document.querySelectorAll(".modal-close, .modal-backdrop").forEach(el => {
+    el.addEventListener("click", () => {
+      const target = el.getAttribute("data-modal");
+      if (target) $(target).className = "modal hidden";
+    });
+  });
+
+  const ak = $("apiKeyInput");
+  const ms = $("modelSelect");
+  ak.value = getUserKey();
+  const savedModel = localStorage.getItem("saba-prompt-optimizer.model") || "";
+  ms.value = (savedModel && TEXT_MODELS_WITH_KEY.includes(savedModel)) ? savedModel : TEXT_MODEL_DEFAULT_WITH_KEY;
+  ak.addEventListener("change", () => {
+    localStorage.setItem("saba-prompt-optimizer.apiKey", ak.value.trim());
+    showToast(ak.value.trim() ? "کلید ذخیره شد ✓" : "کلید پاک شد", "ok");
+  });
+  ms.addEventListener("change", () => {
+    localStorage.setItem("saba-prompt-optimizer.model", ms.value);
+    showToast("مدل ذخیره شد", "ok");
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      e.preventDefault();
+      doOptimize();
+    }
+    if (e.key === "Escape") {
+      document.querySelectorAll(".modal:not(.hidden)").forEach(m => m.className = "modal hidden");
+      const d = $("historyDrawer");
+      if (!d.classList.contains("hidden")) d.className = "drawer hidden";
+    }
+  });
+
+  dbOpen().then(() => bridgeInit()).catch(err => console.warn("storage init failed:", err));
+
+  console.log("%c✨ بهینه‌ساز پرامپت صبا v" + APP_VERSION, "color:#b87cff;font:bold 14px Vazirmatn,sans-serif;");
+  console.log("%cساخته‌ی سید صبا میری · viroai.ir", "color:#a99fc7;");
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
