@@ -1178,7 +1178,16 @@ function init() {
   console.log("%cساخته‌ی سید صبا میری · viroai.ir", "color:#a99fc7;");
 }
 
-document.addEventListener("DOMContentLoaded", init);
+// When loaded directly (file://), DOMContentLoaded may still be pending.
+// When injected by the Canvas loader, DOMContentLoaded has ALREADY fired
+// (the script is appended after document.body.innerHTML is replaced),
+// so we must call init() directly in that case — otherwise the listener
+// registers for an event that will never fire again, and no button works.
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
 </script>
 </body>
 </html>
