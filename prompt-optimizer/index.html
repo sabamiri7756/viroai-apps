@@ -257,6 +257,47 @@ select option, select optgroup { background: #110a2a; color: var(--text); }
   content: "★"; color: var(--primary); margin-left: 6px; font-size: 11px;
 }
 
+/* ============ Image generation panel ============ */
+.image-gen-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-2);
+  padding: 22px;
+  display: flex; flex-direction: column; gap: 16px;
+  animation: slideIn .35s ease;
+}
+.image-gen-panel .result-header h2 { color: var(--accent); }
+.aspect-select {
+  background: rgba(7,5,26,0.6); border: 1px solid var(--border);
+  color: var(--text); padding: 7px 30px 7px 12px; border-radius: var(--radius-xs);
+  font-size: 12.5px; cursor: pointer; outline: none;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%237ce0ff' d='M5 6L0 0h10z'/></svg>");
+  background-repeat: no-repeat; background-position: left 10px center;
+}
+.aspect-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,224,255,0.18); }
+.aspect-select option { background: #110a2a; }
+.primary-btn.small {
+  padding: 9px 18px; font-size: 13px;
+  background: linear-gradient(135deg, var(--accent) 0%, #4fb8d6 100%);
+  box-shadow: 0 4px 16px rgba(124,224,255,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.primary-btn.small:hover:not(:disabled) { box-shadow: 0 8px 22px rgba(124,224,255,0.5); }
+.image-display {
+  margin: 0; border-radius: var(--radius-sm); overflow: hidden;
+  background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+  display: grid; place-items: center; min-height: 240px;
+}
+.image-display img { max-width: 100%; height: auto; display: block; }
+.image-meta {
+  font-size: 11.5px; color: var(--text-faint); text-align: center; margin-top: 6px;
+}
+.image-meta code {
+  font-family: var(--mono); color: var(--accent); background: rgba(124,224,255,0.08);
+  padding: 1px 6px; border-radius: 3px;
+}
+
 /* ============ Drawer (history) ============ */
 .drawer {
   position: fixed; top: 0; bottom: 0; right: 0;
@@ -491,6 +532,31 @@ select option, select optgroup { background: #110a2a; color: var(--text); }
     </div>
   </section>
 
+  <section id="imageGenPanel" class="image-gen-panel hidden" aria-label="تولید تصویر با Gemini">
+    <div class="result-header">
+      <h2>🎨 تولید تصویر با Gemini</h2>
+      <div class="result-actions">
+        <select id="aspectRatioSelect" class="aspect-select" title="نسبت تصویر">
+          <option value="1:1">۱:۱ (مربع)</option>
+          <option value="16:9">۱۶:۹ (افقی)</option>
+          <option value="9:16">۹:۱۶ (عمودی / استوری)</option>
+          <option value="4:3">۴:۳ (افقی کلاسیک)</option>
+          <option value="3:4">۳:۴ (عمودی کلاسیک)</option>
+        </select>
+        <button id="genImageBtn" class="primary-btn small" type="button">
+          <span class="btn-icon">🎨</span>
+          <span>تولید تصویر</span>
+        </button>
+        <button id="downloadImageBtn" class="ghost-btn hidden" type="button">⬇️ دانلود</button>
+      </div>
+    </div>
+    <div id="imageDisplay" class="image-display hidden"></div>
+    <div id="imageMeta" class="image-meta hidden"></div>
+    <p class="hint" style="font-size:11.5px;color:var(--text-faint);margin:0;">
+      تصویر با پرامپت انگلیسی بهینه‌شده‌ی بالا تولید می‌شه. مدل پیش‌فرض <code>gemini-3.1-flash-image</code> است؛ در صورت خطا، خودکار به <code>gemini-2.5-flash-image-preview</code> سوییچ می‌کنه (۱۰ دقیقه روی آن می‌ماند).
+    </p>
+  </section>
+
 </main>
 
 <aside id="historyDrawer" class="drawer hidden" aria-label="تاریخچه">
@@ -552,6 +618,7 @@ select option, select optgroup { background: #110a2a; color: var(--text); }
       <ul>
         <li>۴ دامنه: متن، سئو، عکس، ویدئو</li>
         <li>خروجی JSON با ساختار مشخص</li>
+        <li>🎨 تولید تصویر واقعی با Gemini (فقط دامنه‌ی عکس) — با fallback خودکار مدل</li>
         <li>تاریخچه دائمی در مرورگر</li>
         <li>قابل استفاده با کلید شخصی Gemini</li>
         <li>میانبر Ctrl/Cmd + Enter برای اجرا</li>
@@ -582,13 +649,18 @@ select option, select optgroup { background: #110a2a; color: var(--text); }
 
 /* ===== Constants (مدل‌ها بالای فایل) ===== */
 const APP_ID = "saba-prompt-optimizer";
-const APP_VERSION = "1.0.0";
+const APP_VERSION = "1.1.0";
 
 const TEXT_MODEL_CANVAS = "gemini-2.5-flash";          // بدون کلید، تست‌شده در Canvas
 const TEXT_MODELS_WITH_KEY = ["gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-3.8-flash"];
 const TEXT_MODEL_DEFAULT_WITH_KEY = "gemini-3.5-flash-lite";
 
-const apiKey = "";  // Canvas پر می‌کند. با کلید شخصی از localStorage جایگزین می‌شه.
+const apiKey = "";  // در Canvas، Google از طریق Origin/Session احراز هویت می‌کند. کلید شخصی از localStorage جایگزین می‌شه.
+
+// مدل‌های تصویر (طبق قرارداد: 3.1-flash-image پیش‌فرض، 2.5-image-preview به‌عنوان fallback)
+const IMAGE_MODELS = ["gemini-3.1-flash-image", "gemini-2.5-flash-image-preview"];
+const IMAGE_FALLBACK_MS = 10 * 60 * 1000;  // 10 دقیقه روی fallback بمان، بعد دوباره primary را امتحان کن
+let _imageFallbackUntil = 0;  // timestamp تا وقتی این مدل fallback فعال است
 
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
@@ -874,6 +946,61 @@ async function callGemini(metaPrompt) {
   return parsed;
 }
 
+/* ===== Image generation (طبق قرارداد: 3.1-flash-image → fallback 2.5-image-preview) ===== */
+async function fetchImageWithModel(model, prompt, aspectRatio) {
+  const key = getApiKey();
+  // همان الگوی متنی: اگر key خالی بود (Canvas)، ?key= کلاً حذف می‌شه
+  const url = API_BASE + "/" + encodeURIComponent(model) + ":generateContent"
+    + (key ? "?key=" + encodeURIComponent(key) : "");
+  const body = {
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+    generationConfig: {
+      responseModalities: ["IMAGE"],
+      imageConfig: { aspectRatio: aspectRatio }
+    }
+  };
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    const e = new Error("HTTP " + res.status + (txt ? ": " + txt.slice(0, 240) : ""));
+    e.status = res.status;
+    e.body = txt;
+    throw e;
+  }
+  const data = await res.json();
+  const cand = data.candidates && data.candidates[0];
+  const parts = (cand && cand.content && cand.content.parts) || [];
+  for (const p of parts) {
+    if (p.inlineData && p.inlineData.data) {
+      const mimeType = p.inlineData.mimeType || "image/png";
+      return { dataUrl: "data:" + mimeType + ";base64," + p.inlineData.data, mimeType, model };
+    }
+  }
+  throw new Error("تصویری در پاسخ مدل یافت نشد");
+}
+
+// onModelSwitch(model) — وقتی fallback فعال می‌شه، صدا می‌خوره تا UI وضعیت رو نشون بده
+async function callGeminiImage(prompt, aspectRatio, onModelSwitch) {
+  const useFallback = Date.now() < _imageFallbackUntil;
+  const primaryModel = useFallback ? IMAGE_MODELS[1] : IMAGE_MODELS[0];
+  try {
+    return await fetchImageWithModel(primaryModel, prompt, aspectRatio);
+  } catch (e) {
+    // فقط اگر داشتیم از primary (3.1) استفاده می‌کردیم و خطا قابل fallback است، سوئیچ کن
+    const retryable = e.status === 429 || e.status === 403 || e.status === 404 || (e.status >= 500 && e.status < 600);
+    if (!useFallback && retryable) {
+      _imageFallbackUntil = Date.now() + IMAGE_FALLBACK_MS;
+      if (typeof onModelSwitch === "function") onModelSwitch(IMAGE_MODELS[1]);
+      return await fetchImageWithModel(IMAGE_MODELS[1], prompt, aspectRatio);
+    }
+    throw e;
+  }
+}
+
 /* ===== UI helpers ===== */
 function $(id) { return document.getElementById(id); }
 function escapeHtml(s) {
@@ -893,6 +1020,12 @@ function selectDomain(d) {
   document.querySelectorAll(".domain-card").forEach(c => {
     c.classList.toggle("active", c.dataset.domain === d);
   });
+  // پنل تولید تصویر فقط در دامنه‌ی «عکس» معنی داره
+  if (d !== "image") {
+    $("imageGenPanel").className = "image-gen-panel hidden";
+  } else if (state.lastResult && state.lastResult.domain === "image") {
+    $("imageGenPanel").className = "image-gen-panel";
+  }
 }
 
 function setOptimizing(busy) {
@@ -937,6 +1070,22 @@ function renderResult(r) {
   });
 
   $("resultPanel").className = "result-panel";
+  // پنل تولید تصویر: فقط در دامنه‌ی «عکس» نمایش بده، و هر بار تصویر قبلی رو پاک کن
+  const imgPanel = $("imageGenPanel");
+  const imgDisplay = $("imageDisplay");
+  const imgMeta = $("imageMeta");
+  const dlBtn = $("downloadImageBtn");
+  imgDisplay.innerHTML = "";
+  imgDisplay.className = "image-display hidden";
+  imgMeta.className = "image-meta hidden";
+  imgMeta.innerHTML = "";
+  dlBtn.className = "ghost-btn hidden";
+  dlBtn.onclick = null;
+  if (r.domain === "image") {
+    imgPanel.className = "image-gen-panel";
+  } else {
+    imgPanel.className = "image-gen-panel hidden";
+  }
   $("resultPanel").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -980,6 +1129,83 @@ async function doOptimize() {
     showToast("بهینه‌سازی ناموفق بود", "err");
   } finally {
     setOptimizing(false);
+  }
+}
+
+async function doGenerateImage() {
+  if (!state.lastResult || state.lastResult.domain !== "image") {
+    showToast("اول یک پرامپت تصویر بساز", "warn");
+    return;
+  }
+  if (!state.lastResult.english_prompt) {
+    showToast("پرامپت انگلیسی موجود نیست", "warn");
+    return;
+  }
+  const prompt = state.lastResult.english_prompt;
+  const aspectRatio = $("aspectRatioSelect").value || "1:1";
+
+  const btn = $("genImageBtn");
+  const originalLabel = btn.querySelector("span:last-child").textContent;
+  btn.disabled = true;
+  btn.classList.add("busy");
+  btn.querySelector("span:last-child").textContent = "در حال تولید...";
+
+  const status = $("statusLine");
+  const useFallbackInitially = Date.now() < _imageFallbackUntil;
+  const initialModel = useFallbackInitially ? IMAGE_MODELS[1] : IMAGE_MODELS[0];
+  status.className = "status-line info";
+  status.textContent = "🎨 در حال تولید تصویر... مدل: " + initialModel
+    + (useFallbackInitially ? " (fallback)" : "");
+
+  try {
+    const result = await callGeminiImage(prompt, aspectRatio, (newModel) => {
+      status.textContent = "🎨 در حال تولید تصویر... مدل: " + newModel
+        + " (fallback — مدل اصلی در دسترس نیست، ۱۰ دقیقه روی این می‌مانیم)";
+    });
+
+    // Display the image
+    const display = $("imageDisplay");
+    display.innerHTML = "";
+    const img = document.createElement("img");
+    img.src = result.dataUrl;
+    img.alt = "تصویر تولیدشده توسط Gemini";
+    display.appendChild(img);
+    display.className = "image-display";
+
+    // Show meta (model + aspect ratio)
+    const meta = $("imageMeta");
+    meta.innerHTML = "مدل: <code>" + escapeHtml(result.model) + "</code> · نسبت: <code>" + escapeHtml(aspectRatio) + "</code>";
+    meta.className = "image-meta";
+
+    // Wire download button
+    const dlBtn = $("downloadImageBtn");
+    const ext = (result.mimeType && result.mimeType.split("/")[1]) || "png";
+    dlBtn.onclick = () => {
+      const a = document.createElement("a");
+      a.href = result.dataUrl;
+      a.download = "saba-prompt-image-" + Date.now() + "." + ext;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    };
+    dlBtn.className = "ghost-btn";
+
+    status.className = "hidden";
+    showToast("تصویر آماده شد ✓", "ok");
+  } catch (e) {
+    console.error("image gen error:", e);
+    status.className = "status-line err";
+    let msg = "خطای تولید تصویر: " + (e.message || "نامشخص");
+    if (e.status === 401 || e.status === 403) msg += " — دسترسی به مدل تصویر مقدور نیست. در تنظیمات کلید شخصی وارد کن";
+    else if (e.status === 429) msg += " — محدودیت نرخ. بعداً دوباره";
+    else if (e.status === 404) msg += " — مدل پیدا نشد";
+    else if (e.status >= 500) msg += " — خطای سمت سرور. دوباره امتحان کن";
+    status.textContent = msg;
+    showToast("تولید تصویر ناموفق بود", "err");
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove("busy");
+    btn.querySelector("span:last-child").textContent = originalLabel;
   }
 }
 
@@ -1128,6 +1354,9 @@ function init() {
       .catch(() => showToast("کپی ناموفق", "err"));
   });
   $("saveBtn").addEventListener("click", saveCurrent);
+
+  // تولید تصویر (فقط برای دامنه‌ی عکس)
+  $("genImageBtn").addEventListener("click", doGenerateImage);
 
   $("historyBtn").addEventListener("click", async () => {
     $("historyDrawer").className = "drawer";
